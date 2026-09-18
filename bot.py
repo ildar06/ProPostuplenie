@@ -1,13 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Персональный маршрут поступления — Telegram-бот (прототип, LOCUS Hackathon 2026, кейс 02).
-
-Полный путь: /start -> анкета -> диагностика -> рекомендации (>=3, с объяснением) ->
-сравнение (>=2 программ) -> roadmap (экзамены/документы/дедлайны) ->
-следующий шаг с отметкой прогресса. Изменение ключевых ответов (интересы, балл ЕНТ,
-бюджет, город) заметно меняет рекомендации и roadmap.
-"""
-
 import logging
 import os
 
@@ -33,8 +24,6 @@ logger = logging.getLogger(__name__)
 
 LANG_LABELS = {"kz": "Казахский", "ru": "Русский", "en": "Английский"}
 
-
-# ---------- вспомогательные клавиатуры ----------
 
 def kb_from_pairs(pairs, prefix, cols=1):
     rows, row = [], []
@@ -76,8 +65,6 @@ def kb_menu():
     ]
     return InlineKeyboardMarkup(rows)
 
-
-# ---------- старт и анкета ----------
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
@@ -210,8 +197,6 @@ async def on_city(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return MENU
 
-
-# ---------- диагностика / рекомендации / сравнение / roadmap ----------
 
 def _diagnostics_text(profile):
     grade_map = dict(GRADE_OPTIONS)
@@ -391,9 +376,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def build_app():
-    token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    if not token:
-        raise SystemExit("Задайте переменную окружения TELEGRAM_BOT_TOKEN (см. .env.example)")
+    # Токен напрямую вставлен здесь:
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "8895478279:AAHwUVmthxdBFs8FfCjGd0_unDndzt3lYJ8")
 
     db.init_db()
     app = Application.builder().token(token).build()
@@ -412,7 +396,7 @@ def build_app():
                 CallbackQueryHandler(compare_a, pattern="^cmpA:"),
                 CallbackQueryHandler(compare_b, pattern="^cmpB:"),
                 CallbackQueryHandler(mark_done, pattern="^done:"),
-                CallbackQueryHandler(on_grade, pattern="^grade:"),  # после "Изменить анкету"
+                CallbackQueryHandler(on_grade, pattern="^grade:"),
             ],
         },
         fallbacks=[CommandHandler("cancel", cancel), CommandHandler("start", start)],

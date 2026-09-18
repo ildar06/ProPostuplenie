@@ -1,0 +1,2 @@
+cd /d "C:\Users\ildar\OneDrive\Рабочий стол\locus"
+python bot.py
